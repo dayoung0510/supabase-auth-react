@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
-import { useHistory, Link } from "react-router-dom";
-import { useAuth } from "contexts/Auth";
+import { useRef, useState } from 'react';
+import { useHistory, Link } from 'react-router-dom';
+import { useAuth } from 'contexts/Auth';
 
 export function Signup() {
   const emailRef = useRef();
@@ -21,29 +21,33 @@ export function Signup() {
     const { error } = await signUp({ email, password });
 
     if (error) {
-      alert("error signing in");
+      alert('error signing in');
     } else {
       // Redirect user to Dashboard
-      history.push("/");
+      history.push('/');
     }
   }
 
   return (
-    <>
+    <div>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="input-email">Email</label>
-        <input id="input-email" type="email" ref={emailRef} />
+        <div>
+          <label htmlFor='input-email'>이메일(아이디)</label>
+          <input id='input-email' type='email' ref={emailRef} />
+        </div>
 
-        <label htmlFor="input-password">Password</label>
-        <input id="input-password" type="password" ref={passwordRef} />
+        <div>
+          <label htmlFor='input-password'>비밀번호</label>
+          <input id='input-password' type='password' ref={passwordRef} />
+        </div>
 
         <br />
 
-        <button type="submit">Sign up</button>
+        <button type='submit'>회원가입</button>
       </form>
       <p>
-        Already have an account? <Link to="/login">Log In</Link>
+        이미 아이디가 있으신가요? <Link to='/login'> 로그인 </Link>
       </p>
-    </>
+    </div>
   );
 }

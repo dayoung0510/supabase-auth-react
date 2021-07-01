@@ -1,80 +1,45 @@
-import { useState, useEffect } from "react";
-import { useHistory } from "react-router";
-import { useAuth } from "contexts/Auth";
+import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router';
+import { useAuth } from 'contexts/Auth';
+import { Account } from 'components/Account';
+import { Todolist } from 'components/Todolist';
+import { supabase } from 'supabase';
 
 export function Dashboard() {
   const { user, signOut } = useAuth();
   const history = useHistory();
+  const [session, setSession] = useState(null);
 
+  // 세션 받아옴
+  useEffect(() => {
+    setSession(supabase.auth.session());
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
+
+  // 로그아웃
   async function handleSignOut() {
     await signOut();
-
-    // Redirects the user to Login page
-    history.push("/login");
+    history.push('/login');
   }
 
-  //todolist 기능
-  const [userInput, setUserInput] = useState("");
-  const [todoList, setTodoList] = useState([]);
-
-  const handleChange = (e) => {
-    e.preventDefault();
-    setUserInput(e.target.value);
-    console.log(userInput);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setTodoList([userInput, ...todoList]);
-    setUserInput("");
-  };
-
-  const handleDelete = (todo) => {
-    const updatedArr = todoList.filter(
-      (todoItem) => todoList.indexOf(todoItem) != todoList.indexOf(todo)
-    );
-    setTodoList(updatedArr);
-  };
-
   return (
-    <>
+    <div>
       <div>
-        <p>Welcome, {user?.id}!</p>
-        <button onClick={handleSignOut}>Sign out</button>
+        <button type='button' onClick={handleSignOut}>
+          로그아웃
+        </button>
       </div>
-      <div>
-        <form>
-          <input
-            className="col-6"
-            value={userInput}
-            type="text"
-            onChange={handleChange}
-          />
-          <button type="button" onClick={handleSubmit}>
-            확인
-          </button>
-        </form>
-        <ul>
-          {todoList.length >= 1
-            ? todoList.map((todo, idx) => {
-                return (
-                  <li key={idx}>
-                    {todo}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleDelete(todo);
-                      }}
-                    >
-                      삭제
-                    </button>
-                  </li>
-                );
-              })
-            : "항목을 입력하시오!"}
-        </ul>
+
+      <div style={{ marginTop: '5rem' }}>
+        {user.id ? (
+          <Todolist />
+        ) : (
+          <Account key={session.user.id} session={session} />
+        )}
       </div>
-    </>
+    </div>
   );
 }
