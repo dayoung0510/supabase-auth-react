@@ -57,3 +57,11 @@ export const BlueBtn = styled(RedBtn)`
   background-color: #8ebeb6;
   padding: 0.5rem 1rem;
 `;
+
+export const DelBtn = styled.button`
+  border: 1px solid #8b0f0e;
+  border-radius: 50%;
+  background-color: #8b0f0e;
+  color: #fff;
+  font-weight: 800;
+`;

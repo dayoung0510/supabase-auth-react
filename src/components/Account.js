@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { supabase } from "supabase";
+import { useAuth } from "contexts/Auth";
 
 export function Account({ session }) {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState(null);
   const [avatar_url, setAvatarUrl] = useState(null);
+  const { user, signOut } = useAuth();
 
   const history = useHistory();
 
@@ -70,7 +72,7 @@ export function Account({ session }) {
     <div className="form-widget">
       <div>
         <label htmlFor="email">이메일</label>
-        {/* <input id="email" type="text" value={session.user.email} disabled /> */}
+        <input id="email" type="text" value={user.email} disabled />
       </div>
       <div>
         <label htmlFor="username">닉네임</label>

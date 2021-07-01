@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { BlueBtn } from "styles/etcStyles";
+import { BlueBtn, DelBtn } from "styles/etcStyles";
 
 const Div = styled.div`
   padding: 2rem;
@@ -48,15 +48,14 @@ export function Todolist() {
                 return (
                   <li key={idx}>
                     {todo}
-                    <button
-                      type="button"
+                    <DelBtn
                       onClick={(e) => {
                         e.preventDefault();
                         handleDelete(todo);
                       }}
                     >
-                      삭제
-                    </button>
+                      X
+                    </DelBtn>
                   </li>
                 );
               })

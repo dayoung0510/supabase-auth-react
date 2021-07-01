@@ -66,9 +66,10 @@ export function Home() {
     <div>
       <NavBar>
         <div style={{ paddingLeft: "1rem" }}>
-          😎 {username} | {user.email}
+          {username} ({user.email})
         </div>
         <div>
+          <WhiteBtn onClick={() => history.push("/account")}>계정관리</WhiteBtn>
           <WhiteBtn onClick={handleSignOut}>로그아웃</WhiteBtn>
         </div>
       </NavBar>
