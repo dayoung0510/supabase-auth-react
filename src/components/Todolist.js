@@ -1,8 +1,14 @@
-import { useState } from 'react';
+import { useState } from "react";
+import styled from "styled-components";
+import { BlueBtn } from "styles/etcStyles";
+
+const Div = styled.div`
+  padding: 2rem;
+`;
 
 export function Todolist() {
   //todolist 기능
-  const [userInput, setUserInput] = useState('');
+  const [userInput, setUserInput] = useState("");
   const [todoList, setTodoList] = useState([]);
 
   const handleChange = (e) => {
@@ -14,7 +20,7 @@ export function Todolist() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setTodoList([userInput, ...todoList]);
-    setUserInput('');
+    setUserInput("");
   };
 
   const handleDelete = (todo) => {
@@ -25,18 +31,16 @@ export function Todolist() {
   };
 
   return (
-    <div>
+    <Div>
       <div>
         <form>
           <input
-            className='col-6'
+            className="col-6"
             value={userInput}
-            type='text'
+            type="text"
             onChange={handleChange}
           />
-          <button type='button' onClick={handleSubmit}>
-            확인
-          </button>
+          <BlueBtn onClick={handleSubmit}>확인</BlueBtn>
         </form>
         <ul>
           {todoList.length >= 1
@@ -45,7 +49,7 @@ export function Todolist() {
                   <li key={idx}>
                     {todo}
                     <button
-                      type='button'
+                      type="button"
                       onClick={(e) => {
                         e.preventDefault();
                         handleDelete(todo);
@@ -56,9 +60,9 @@ export function Todolist() {
                   </li>
                 );
               })
-            : '항목을 입력하시오!'}
+            : "입력된 항목이 없습니다."}
         </ul>
       </div>
-    </div>
+    </Div>
   );
 }

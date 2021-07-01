@@ -1,6 +1,22 @@
-import { useRef, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
-import { useAuth } from 'contexts/Auth';
+import { useRef } from "react";
+import styled from "styled-components";
+import { useHistory, Link } from "react-router-dom";
+import { useAuth } from "contexts/Auth";
+import {
+  BothFlex,
+  LoginBox,
+  RedBtn,
+  GrayBtn,
+  RedBoldTxt,
+} from "styles/etcStyles";
+
+const Label = styled.label`
+  display: inline-block;
+  width: 5rem;
+`;
+const Input = styled.input`
+  width: calc(100% - 6rem);
+`;
 
 export function Login() {
   const emailRef = useRef();
@@ -21,32 +37,42 @@ export function Login() {
     const { error } = await signIn({ email, password });
 
     if (error) {
-      alert('error signing in');
+      alert("error signing in");
     } else {
       // Redirect user to Dashboard
-      history.push('/');
+      history.push("/");
     }
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor='input-email'>이메일(아이디)</label>
-          <input id='input-email' type='email' ref={emailRef} />
-        </div>
-        <div>
-          <label htmlFor='input-password'>비밀번호</label>
-          <input id='input-password' type='password' ref={passwordRef} />
-        </div>
+    <div style={{ width: "100%", height: "100%" }}>
+      <BothFlex style={{ height: "100%" }}>
+        <RedBoldTxt style={{ letterSpacing: "12px" }}>TODOLIST</RedBoldTxt>
+        <LoginBox>
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginTop: "2rem" }}>
+              <Label htmlFor="input-email">이메일</Label>
+              <Input id="input-email" type="email" ref={emailRef} />
+            </div>
+            <div>
+              <Label htmlFor="input-password">비밀번호</Label>
+              <Input id="input-password" type="password" ref={passwordRef} />
+            </div>
 
-        <div>
-          <button type='submit'>로그인</button>
-        </div>
-      </form>
-      <p>
-        아이디가 없으신가요? <Link to='/signup'>회원가입</Link>
-      </p>
+            <div style={{ marginTop: "3rem" }}>
+              <RedBtn style={{ width: "18rem" }} type="submit">
+                로그인
+              </RedBtn>
+            </div>
+          </form>
+          <GrayBtn
+            style={{ width: "18rem" }}
+            onClick={() => history.push("/signup")}
+          >
+            회원가입
+          </GrayBtn>{" "}
+        </LoginBox>
+      </BothFlex>
     </div>
   );
 }
