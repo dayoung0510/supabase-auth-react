@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useHistory } from 'react-router';
-import { supabase } from 'supabase';
+import { useState, useEffect } from "react";
+import { useHistory } from "react-router";
+import { supabase } from "supabase";
 
 export function Account({ session }) {
   const [loading, setLoading] = useState(true);
@@ -19,9 +19,9 @@ export function Account({ session }) {
       const user = supabase.auth.user();
 
       let { data, error, status } = await supabase
-        .from('profiles')
-        .select(`username, website, avatar_url`)
-        .eq('id', user.id)
+        .from("profiles")
+        .select(`username, avatar_url`)
+        .eq("id", user.id)
         .single();
 
       if (error && status !== 406) {
@@ -39,7 +39,7 @@ export function Account({ session }) {
     }
   }
 
-  async function updateProfile({ username, website, avatar_url }) {
+  async function updateProfile({ username, avatar_url }) {
     try {
       setLoading(true);
       const user = supabase.auth.user();
@@ -51,14 +51,14 @@ export function Account({ session }) {
         updated_at: new Date(),
       };
 
-      let { error } = await supabase.from('profiles').upsert(updates, {
-        returning: 'minimal', // Don't return the value after inserting
+      let { error } = await supabase.from("profiles").upsert(updates, {
+        returning: "minimal", // Don't return the value after inserting
       });
 
       if (error) {
         throw error;
       }
-      return history.push('/');
+      return history.push("/");
     } catch (error) {
       alert(error.message);
     } finally {
@@ -67,28 +67,28 @@ export function Account({ session }) {
   }
 
   return (
-    <div className='form-widget'>
+    <div className="form-widget">
       <div>
-        <label htmlFor='email'>이메일(아이디)</label>
-        <input id='email' type='text' value={session.user.email} disabled />
+        <label htmlFor="email">이메일</label>
+        {/* <input id="email" type="text" value={session.user.email} disabled /> */}
       </div>
       <div>
-        <label htmlFor='username'>닉네임</label>
+        <label htmlFor="username">닉네임</label>
         <input
-          id='username'
-          type='text'
-          value={username || ''}
+          id="username"
+          type="text"
+          value={username || ""}
           onChange={(e) => setUsername(e.target.value)}
         />
       </div>
 
       <div>
         <button
-          className='button block primary'
+          className="button block primary"
           onClick={() => updateProfile({ username, avatar_url })}
           disabled={loading}
         >
-          {loading ? '잠시 기다려주세요' : '업데이트'}
+          {loading ? "잠시 기다려주세요" : "업데이트"}
         </button>
       </div>
     </div>

@@ -26,21 +26,55 @@ export function Home() {
     history.push("/login");
   }
 
+  useEffect(() => {
+    getProfile();
+  }, [session]);
+
+  const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState(null);
+  const [website, setWebsite] = useState(null);
+  const [avatar_url, setAvatarUrl] = useState(null);
+
+  async function getProfile() {
+    try {
+      setLoading(true);
+      const user = supabase.auth.user();
+
+      let { data, error, status } = await supabase
+        .from("profiles")
+        .select(`username, website, avatar_url`)
+        .eq("id", user.id)
+        .single();
+
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setUsername(data.username);
+        setWebsite(data.website);
+        setAvatarUrl(data.avatar_url);
+      }
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div>
       <NavBar>
-        <div style={{ paddingLeft: "1rem" }}>환영합니다, 님😎</div>
+        <div style={{ paddingLeft: "1rem" }}>
+          😎 {username} | {user.email}
+        </div>
         <div>
           <WhiteBtn onClick={handleSignOut}>로그아웃</WhiteBtn>
         </div>
       </NavBar>
 
       <div>
-        {user.id ? (
-          <Todolist />
-        ) : (
-          <Account key={session.user.id} session={session} />
-        )}
+        {username ? <Todolist /> : <Account key={user.id} session={session} />}
       </div>
     </div>
   );
