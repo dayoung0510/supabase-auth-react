@@ -4,7 +4,7 @@ import { useAuth } from "contexts/Auth";
 import { Account } from "components/Account";
 import { Todolist } from "components/Todolist";
 import { supabase } from "supabase";
-import { NavBar, WhiteBtn, LeftZero, RightZero } from "styles/etcStyles";
+import { NavBar, WhiteBtn } from "styles/etcStyles";
 
 export function Home() {
   const { user, signOut } = useAuth();
@@ -69,13 +69,22 @@ export function Home() {
           {username} ({user.email})
         </div>
         <div>
-          <WhiteBtn onClick={() => history.push("/account")}>계정관리</WhiteBtn>
+          <WhiteBtn
+            style={{ margin: 0 }}
+            onClick={() => history.push("/account")}
+          >
+            계정관리
+          </WhiteBtn>
           <WhiteBtn onClick={handleSignOut}>로그아웃</WhiteBtn>
         </div>
       </NavBar>
 
       <div>
-        {username ? <Todolist /> : <Account key={user.id} session={session} />}
+        {username ? (
+          <Todolist session={session} />
+        ) : (
+          <Account key={user.id} session={session} />
+        )}
       </div>
     </div>
   );

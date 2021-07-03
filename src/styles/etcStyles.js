@@ -65,3 +65,8 @@ export const DelBtn = styled.button`
   color: #fff;
   font-weight: 800;
 `;
+
+export const Label = styled.label`
+  display: inline-block;
+  width: 5rem;
+`;

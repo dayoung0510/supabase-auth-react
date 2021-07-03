@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { supabase } from "supabase";
 import { useAuth } from "contexts/Auth";
+import { BothFlex, Label, RedBtn } from "styles/etcStyles";
 
 export function Account({ session }) {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState(null);
   const [avatar_url, setAvatarUrl] = useState(null);
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
   const history = useHistory();
 
@@ -69,13 +70,16 @@ export function Account({ session }) {
   }
 
   return (
-    <div className="form-widget">
+    <BothFlex
+      className="form-widget"
+      style={{ marginTop: "5rem", height: "100%" }}
+    >
       <div>
-        <label htmlFor="email">이메일</label>
+        <Label htmlFor="email">이메일</Label>
         <input id="email" type="text" value={user.email} disabled />
       </div>
       <div>
-        <label htmlFor="username">닉네임</label>
+        <Label htmlFor="username">닉네임</Label>
         <input
           id="username"
           type="text"
@@ -84,15 +88,15 @@ export function Account({ session }) {
         />
       </div>
 
-      <div>
-        <button
-          className="button block primary"
+      <div style={{ marginTop: "2rem" }}>
+        <RedBtn
+          style={{ width: "100%" }}
           onClick={() => updateProfile({ username, avatar_url })}
           disabled={loading}
         >
           {loading ? "잠시 기다려주세요" : "업데이트"}
-        </button>
+        </RedBtn>
       </div>
-    </div>
+    </BothFlex>
   );
 }

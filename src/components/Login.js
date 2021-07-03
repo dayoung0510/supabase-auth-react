@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import styled from "styled-components";
-import { useHistory, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useAuth } from "contexts/Auth";
 import {
   BothFlex,
@@ -8,12 +8,9 @@ import {
   RedBtn,
   GrayBtn,
   RedBoldTxt,
+  Label,
 } from "styles/etcStyles";
 
-const Label = styled.label`
-  display: inline-block;
-  width: 5rem;
-`;
 const Input = styled.input`
   width: calc(100% - 6rem);
 `;
