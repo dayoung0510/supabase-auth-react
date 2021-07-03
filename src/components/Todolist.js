@@ -4,6 +4,7 @@ import { supabase } from "supabase";
 
 export function Todolist({ session }) {
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState({ idx: 0, ing: "false" });
 
   //todolist 기능
   const [userInput, setUserInput] = useState("");
@@ -44,7 +45,7 @@ export function Todolist({ session }) {
         date: new Date(),
       };
 
-      let { error } = await supabase.from("todolist").upsert(adds, {
+      let { error } = await supabase.from("todolist").insert(adds, {
         returning: "minimal",
       });
 
@@ -58,6 +59,31 @@ export function Todolist({ session }) {
     }
   }
 
+  async function DeleteTodoList(idx) {
+    try {
+      setLoading(true);
+      const user = supabase.auth.user();
+
+      const { data, error } = await supabase
+        .from("todolist")
+        .delete()
+        .match({ id: idx });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleEdit = (id) => {
+    setEditMode({ idx: id, ing: true });
+    console.log("editMode : ", editMode);
+  };
+
   const handleChange = (e) => {
     e.preventDefault();
     setUserInput(e.target.value);
@@ -65,21 +91,15 @@ export function Todolist({ session }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // setTodoList([userInput, ...todoList]);
     AddTodolist(userInput);
     setUserInput("");
   };
 
-  const handleDelete = (todo) => {
-    const updatedArr = todoList.filter(
-      (todoItem) => todoList.indexOf(todoItem) !== todoList.indexOf(todo)
-    );
-    setTodoList(updatedArr);
-  };
-
   useEffect(() => {
     getTodolist();
-  }, [session, todoList]);
+  }, [session]);
+
+  console.log("!!");
 
   return (
     <div style={{ padding: "2rem" }}>
@@ -98,15 +118,33 @@ export function Todolist({ session }) {
             {todoList.map((item, idx) => {
               return (
                 <li key={idx}>
-                  {item.content}
-                  <DelBtn
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleDelete(idx);
-                    }}
-                  >
-                    X
-                  </DelBtn>
+                  {item.id} : {item.content}
+                  {item.date}
+                  {!editMode.ing ? (
+                    <>
+                      <button type="button">완료</button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleEdit(item.id);
+                        }}
+                      >
+                        수정
+                      </button>
+                      <DelBtn
+                        onClick={(e) => {
+                          e.preventDefault();
+                          DeleteTodoList(item.id);
+                        }}
+                      >
+                        X
+                      </DelBtn>
+                    </>
+                  )}
                 </li>
               );
             })}
