@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { BlueBtn, DelBtn } from "styles/etcStyles";
-import { supabase } from "supabase";
+import { useState, useEffect } from 'react';
+import { BlueBtn, DelBtn } from 'styles/etcStyles';
+import { supabase } from 'supabase';
 
 export function Todolist({ session }) {
   const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState({ idx: 0, ing: "false" });
+  const [editMode, setEditMode] = useState({ idx: 0, ing: 'false' });
 
   //todolist 기능
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useState('');
   const [todoList, setTodoList] = useState([]);
 
   async function getTodolist() {
@@ -16,9 +16,9 @@ export function Todolist({ session }) {
       const user = supabase.auth.user();
 
       let { data, error, status } = await supabase
-        .from("todolist")
+        .from('todolist')
         .select(`content, id, date`)
-        .eq("uid", user.id);
+        .eq('uid', user.id);
 
       if (error && status !== 406) {
         throw error;
@@ -34,40 +34,31 @@ export function Todolist({ session }) {
     }
   }
 
-  async function AddTodolist(content) {
-    try {
-      setLoading(true);
-      const user = supabase.auth.user();
-
-      const adds = {
-        uid: user.id,
-        content,
-        date: new Date(),
-      };
-
-      let { error } = await supabase.from("todolist").insert(adds, {
-        returning: "minimal",
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function DeleteTodoList(idx) {
+    // try {
+    //   setLoading(true);
+    //   const { data, error } = await supabase
+    //     .from('todolist')
+    //     .delete()
+    //     .match({ id: idx });
+    //   if (error) {
+    //     throw error;
+    //   }
+    // } catch (error) {
+    //   alert(error.message);
+    // } finally {
+    //   setLoading(false);
+    // }
+  }
+
+  const handleDelete = async (id) => {
+    // db로 뭐 삭제할지 보냄
     try {
       setLoading(true);
-      const user = supabase.auth.user();
-
-      const { data, error } = await supabase
-        .from("todolist")
+      const { error } = await supabase
+        .from('todolist')
         .delete()
-        .match({ id: idx });
+        .match({ id: id });
 
       if (error) {
         throw error;
@@ -77,11 +68,20 @@ export function Todolist({ session }) {
     } finally {
       setLoading(false);
     }
-  }
+
+    // 화면에서 삭제해줌
+    const updatedArr = todoList.filter((i) => {
+      return todoList.indexOf(i.id) !== todoList.find((x) => x.id === i.id).id;
+    });
+
+    console.log(updatedArr);
+  };
+
+  console.log('todoList', todoList);
 
   const handleEdit = (id) => {
     setEditMode({ idx: id, ing: true });
-    console.log("editMode : ", editMode);
+    console.log('editMode : ', editMode);
   };
 
   const handleChange = (e) => {
@@ -89,25 +89,54 @@ export function Todolist({ session }) {
     setUserInput(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    AddTodolist(userInput);
-    setUserInput("");
+
+    // 방금 입력한거 db로 보냄
+    try {
+      setLoading(true);
+      const user = supabase.auth.user();
+      const content = userInput;
+
+      const adds = {
+        uid: user.id,
+        content,
+        date: new Date(),
+      };
+
+      let { error, data } = await supabase
+        .from('todolist')
+        .insert(adds)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      // 방금 입력한거 화면에 추가해줌
+      setTodoList((prev) => {
+        return [...prev, { id: data.id, content: userInput }];
+      });
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+
+    setUserInput('');
   };
 
   useEffect(() => {
     getTodolist();
   }, [session]);
 
-  console.log("!!");
-
   return (
-    <div style={{ padding: "2rem" }}>
+    <div style={{ padding: '2rem' }}>
       <form>
         <input
-          className="col-6"
+          className='col-6'
           value={userInput}
-          type="text"
+          type='text'
           onChange={handleChange}
         />
         <BlueBtn onClick={handleSubmit}>확인</BlueBtn>
@@ -119,15 +148,14 @@ export function Todolist({ session }) {
               return (
                 <li key={idx}>
                   {item.id} : {item.content}
-                  {item.date}
                   {!editMode.ing ? (
-                    <>
-                      <button type="button">완료</button>
-                    </>
+                    <span>
+                      <button type='button'>완료</button>
+                    </span>
                   ) : (
-                    <>
+                    <span>
                       <button
-                        type="button"
+                        type='button'
                         onClick={(e) => {
                           e.preventDefault();
                           handleEdit(item.id);
@@ -138,19 +166,19 @@ export function Todolist({ session }) {
                       <DelBtn
                         onClick={(e) => {
                           e.preventDefault();
-                          DeleteTodoList(item.id);
+                          handleDelete(item.id);
                         }}
                       >
                         X
                       </DelBtn>
-                    </>
+                    </span>
                   )}
                 </li>
               );
             })}
           </div>
         ) : (
-          "항목이 없습니다."
+          '항목이 없습니다.'
         )}
       </ul>
     </div>
