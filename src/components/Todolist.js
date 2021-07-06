@@ -4,9 +4,8 @@ import { supabase } from 'supabase';
 
 export function Todolist({ session }) {
   const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState({ idx: 0, ing: 'false' });
-
-  //todolist 기능
+  const [editMode, setEditMode] = useState({ idx: 0, ing: false });
+  const [editInput, setEditInput] = useState('');
   const [userInput, setUserInput] = useState('');
   const [todoList, setTodoList] = useState([]);
 
@@ -18,7 +17,8 @@ export function Todolist({ session }) {
       let { data, error, status } = await supabase
         .from('todolist')
         .select(`content, id, date`)
-        .eq('uid', user.id);
+        .eq('uid', user.id)
+        .order('id', { ascending: true });
 
       if (error && status !== 406) {
         throw error;
@@ -32,23 +32,6 @@ export function Todolist({ session }) {
     } finally {
       setLoading(false);
     }
-  }
-
-  async function DeleteTodoList(idx) {
-    // try {
-    //   setLoading(true);
-    //   const { data, error } = await supabase
-    //     .from('todolist')
-    //     .delete()
-    //     .match({ id: idx });
-    //   if (error) {
-    //     throw error;
-    //   }
-    // } catch (error) {
-    //   alert(error.message);
-    // } finally {
-    //   setLoading(false);
-    // }
   }
 
   const handleDelete = async (id) => {
@@ -78,12 +61,43 @@ export function Todolist({ session }) {
 
   const handleEdit = (id) => {
     setEditMode({ idx: id, ing: true });
-    console.log('editMode : ', editMode);
+  };
+
+  const handleSubmitEdit = async (id) => {
+    // 수정 입력한거 db로 보냄
+    try {
+      setLoading(true);
+      const content = editInput;
+      const { error } = await supabase
+        .from('todolist')
+        .update({ content: content })
+        .match({ id: id });
+
+      if (error) {
+        throw error;
+      }
+
+      // 방금 입력한거 화면에 수정해줌
+      todoList.find((i) => {
+        if (i.id === id) {
+          i.content = editInput;
+        }
+      });
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
     e.preventDefault();
     setUserInput(e.target.value);
+  };
+
+  const handleEditChange = (e) => {
+    e.preventDefault();
+    setEditInput(e.target.value);
   };
 
   const handleSubmit = async (e) => {
@@ -144,10 +158,29 @@ export function Todolist({ session }) {
             {todoList.map((item, idx) => {
               return (
                 <li key={idx}>
-                  {item.id} : {item.content}
-                  {!editMode.ing ? (
+                  {item.id}번
+                  {editMode.idx === item.id ? (
+                    <input
+                      defaultValue={item.content}
+                      onChange={handleEditChange}
+                    />
+                  ) : (
+                    item.content
+                  )}
+                  {editMode.ing && editMode.idx === item.id ? (
                     <span>
-                      <button type='button'>완료</button>
+                      <button
+                        type='button'
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSubmitEdit(item.id);
+                          setEditMode((prev) => {
+                            return { prev, ing: false };
+                          });
+                        }}
+                      >
+                        완료
+                      </button>
                     </span>
                   ) : (
                     <span>
