@@ -71,13 +71,10 @@ export function Todolist({ session }) {
 
     // 화면에서 삭제해줌
     const updatedArr = todoList.filter((i) => {
-      return todoList.indexOf(i.id) !== todoList.find((x) => x.id === i.id).id;
+      return i.id !== todoList.find((item) => item.id === id).id;
     });
-
-    console.log(updatedArr);
+    setTodoList(updatedArr);
   };
-
-  console.log('todoList', todoList);
 
   const handleEdit = (id) => {
     setEditMode({ idx: id, ing: true });
